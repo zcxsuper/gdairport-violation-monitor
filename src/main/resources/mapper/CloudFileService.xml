@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.FileMapper">
+
+    <select id="listAllAncestors" parameterType="long" resultType="com.example.domain.entity.File">
+        WITH RECURSIVE ancestors AS (
+            SELECT id, parent_id FROM files WHERE id = #{id}
+            UNION ALL
+            SELECT f.id, f.parent_id
+            FROM files f
+                     INNER JOIN ancestors a ON f.id = a.parent_id
+        )
+        SELECT id, parent_id FROM ancestors;
+    </select>
+
+    <select id="listAllDescendants" parameterType="long" resultType="com.example.domain.entity.File">
+        WITH RECURSIVE descendants AS (
+            SELECT id, parent_id FROM files WHERE id = #{id}
+            UNION ALL
+            SELECT f.id, f.parent_id
+            FROM files f
+                     INNER JOIN descendants d ON f.parent_id = d.id
+        )
+        SELECT id, parent_id FROM descendants;
+    </select>
+
+</mapper>

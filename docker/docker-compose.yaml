@@ -1,0 +1,219 @@
+# ============================================
+# 环境变量配置
+# ============================================
+# 存储路径前缀，可通过环境变量 STORAGE_PATH 覆盖
+# 默认值：/data/gdairport-violation-monitor
+# 使用方式：
+#   1. 在 .env 文件中设置：STORAGE_PATH=/custom/path
+#   2. 在命令行中设置：export STORAGE_PATH=/custom/path
+#   3. 在 docker-compose.yaml 同目录下创建 .env 文件
+# ============================================
+
+services:
+  gdairport-violation-monitor-mysql:
+    image: mysql:8.0.36
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-gdairport-violation-monitor}
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d  # 配置文件（相对路径）
+      - ./mysql/init:/docker-entrypoint-initdb.d  # 初始化脚本（相对路径）
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/mysql:/var/lib/mysql  # MySQL 数据目录（Bind Mount）
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  gdairport-violation-monitor-redis:
+    image: redis:8.2.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf  # 配置文件（相对路径） 
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/redis:/data  # Redis 数据目录（Bind Mount）
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/redis/logs:/var/log/redis  # Redis 日志目录（Bind Mount）
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  gdairport-violation-monitor-rabbitmq:
+    image: rabbitmq:3.8-management
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-rabbitmq}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-rabbitmq}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-/gdairport-violation-monitor}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/rabbitmq:/var/lib/rabbitmq  # RabbitMQ 数据目录（Bind Mount）
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/rabbitmq/logs:/var/log/rabbitmq  # RabbitMQ 日志目录（Bind Mount）
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        compress: "true"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  gdairport-violation-monitor-minio1:
+    image: minio/minio:latest
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_CONSOLE_ADDRESS: ":9090"
+    volumes:
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio1/data1:/data1
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio1/data2:/data2
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio1/config:/root/.minio
+    command:
+      - server
+      - http://gdairport-violation-monitor-minio1/data1
+      - http://gdairport-violation-monitor-minio1/data2
+      - http://gdairport-violation-monitor-minio2/data1
+      - http://gdairport-violation-monitor-minio2/data2
+      - http://gdairport-violation-monitor-minio3/data1
+      - http://gdairport-violation-monitor-minio3/data2
+      - http://gdairport-violation-monitor-minio4/data1
+      - http://gdairport-violation-monitor-minio4/data2
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+
+  gdairport-violation-monitor-minio2:
+    image: minio/minio:latest
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_CONSOLE_ADDRESS: ":9090"
+    volumes:
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio2/data1:/data1
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio2/data2:/data2
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio2/config:/root/.minio
+    command:
+      - server
+      - http://gdairport-violation-monitor-minio1/data1
+      - http://gdairport-violation-monitor-minio1/data2
+      - http://gdairport-violation-monitor-minio2/data1
+      - http://gdairport-violation-monitor-minio2/data2
+      - http://gdairport-violation-monitor-minio3/data1
+      - http://gdairport-violation-monitor-minio3/data2
+      - http://gdairport-violation-monitor-minio4/data1
+      - http://gdairport-violation-monitor-minio4/data2
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+
+  gdairport-violation-monitor-minio3:
+    image: minio/minio:latest
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_CONSOLE_ADDRESS: ":9090"
+    volumes:
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio3/data1:/data1
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio3/data2:/data2
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio3/config:/root/.minio
+    command:
+      - server
+      - http://gdairport-violation-monitor-minio1/data1
+      - http://gdairport-violation-monitor-minio1/data2
+      - http://gdairport-violation-monitor-minio2/data1
+      - http://gdairport-violation-monitor-minio2/data2
+      - http://gdairport-violation-monitor-minio3/data1
+      - http://gdairport-violation-monitor-minio3/data2
+      - http://gdairport-violation-monitor-minio4/data1
+      - http://gdairport-violation-monitor-minio4/data2
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+
+  gdairport-violation-monitor-minio4:
+    image: minio/minio:latest
+    environment:
+      TZ: ${TZ:-Asia/Shanghai}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_CONSOLE_ADDRESS: ":9090"
+    volumes:
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio4/data1:/data1
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio4/data2:/data2
+      - ${STORAGE_PATH:-/data/gdairport-violation-monitor}/minio/minio4/config:/root/.minio
+    command:
+      - server
+      - http://gdairport-violation-monitor-minio1/data1
+      - http://gdairport-violation-monitor-minio1/data2
+      - http://gdairport-violation-monitor-minio2/data1
+      - http://gdairport-violation-monitor-minio2/data2
+      - http://gdairport-violation-monitor-minio3/data1
+      - http://gdairport-violation-monitor-minio3/data2
+      - http://gdairport-violation-monitor-minio4/data1
+      - http://gdairport-violation-monitor-minio4/data2
+    networks:
+      - gdairport-violation-monitor-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 5
+
+networks:
+  gdairport-violation-monitor-network:
+    driver: bridge
+

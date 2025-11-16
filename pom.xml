@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.3</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.example</groupId>
+	<artifactId>gdairport-violation-monitor</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>gdairport-violation-monitor</name>
+	<description>gdairport-violation-monitor</description>
+	<url/>
+	<licenses>
+		<license/>
+	</licenses>
+	<developers>
+		<developer/>
+	</developers>
+	<scm>
+		<connection/>
+		<developerConnection/>
+		<tag/>
+		<url/>
+	</scm>
+	<properties>
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		
+		<!-- 
+			Spring Boot 相关依赖版本由 spring-boot-starter-parent 统一管理，无需显式指定：
+			- spring-boot-starter-web: 3.5.3
+			- spring-boot-starter-webflux: 3.5.3
+			- spring-boot-starter-data-redis: 3.5.3
+			- spring-boot-starter-amqp: 3.5.3
+			- spring-boot-starter-validation: 3.5.3
+			- spring-boot-starter-aop: 3.5.3
+			- spring-security-core: 由 Spring Boot parent 管理
+		-->
+
+        <!-- redisson 版本 -->
+		<redisson.version>3.52.0</redisson.version>
+
+		<!-- LangChain4j 版本 -->
+		<langchain4j.version>1.0.1-beta6</langchain4j.version>
+		<langchain4j-reactor.version>1.1.0-beta7</langchain4j-reactor.version>
+		
+		<!-- 认证相关 -->
+		<java-jwt.version>4.4.0</java-jwt.version>
+		
+		<!-- ORM 相关 -->
+		<mybatis-spring-boot.version>3.0.3</mybatis-spring-boot.version>
+		<mybatis-plus.version>3.5.5</mybatis-plus.version>
+		
+		<!-- 向量数据库 -->
+		<milvus-sdk.version>2.6.1</milvus-sdk.version>
+
+		<minio.version>8.6.0</minio.version>
+		<okhttp.version>4.12.0</okhttp.version>
+		
+		<!-- 序列化 -->
+		<protobuf.version>3.25.3</protobuf.version>
+	</properties>
+	<dependencies>
+		<!-- MacOS 的 native DNS 解析优化包（仅 macOS ARM 平台需要）-->
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver-dns-native-macos</artifactId>
+			<classifier>osx-aarch_64</classifier>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson-spring-boot-starter</artifactId>
+			<version>${redisson.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java-jwt.version}</version>
+		</dependency>
+
+		<!-- Jakarta Validation：用于参数校验（@Valid、@Validated、@NotNull、@Size 等）-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+		</dependency>
+
+		<!-- minIO -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>${minio.version}</version>
+		</dependency>
+
+        <!-- okhttp -->
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+			<version>${okhttp.version}</version>
+		</dependency>
+
+		<!--lombok-->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!--mybatis-->
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>${mybatis-spring-boot.version}</version>
+		</dependency>
+
+		<!-- MySQL 驱动：Spring Boot 3.x 推荐使用 mysql-connector-j -->
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- MyBatis Plus：boot-starter 已包含 core 和 extension，无需单独引入 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${protobuf.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

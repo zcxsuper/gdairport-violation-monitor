@@ -1,0 +1,79 @@
+gdairport-violation-monitor:
+  # ============================================
+  # JWT 配置
+  # ============================================
+  jwt:
+    # 支持环境变量：JWT_ACCESS_EXPIRE
+    access-expire: ${JWT_ACCESS_EXPIRE:1}
+    # 支持环境变量：JWT_REFRESH_EXPIRE
+    refresh-expire: ${JWT_REFRESH_EXPIRE:7}
+    # 支持环境变量：JWT_SECURITY
+    security: ${JWT_SECURITY:zcxsuper}
+
+  # ============================================
+  # 用户配置
+  # ============================================
+  user:
+    # 支持环境变量：USER_PASSWORD_LENGTH
+    password-length: ${USER_PASSWORD_LENGTH:6}
+
+  # ============================================
+  # Redis 配置
+  # ============================================
+  redis:
+    # 支持环境变量：REDIS_HOST
+    host: ${REDIS_HOST:localhost}
+    # 支持环境变量：REDIS_PORT
+    port: ${REDIS_PORT:6379}
+    # 支持环境变量：REDIS_PASSWORD（默认空字符串）
+    password: ${REDIS_PASSWORD:redis}
+    # 支持环境变量：REDIS_DATABASE（默认 0）
+    database: ${REDIS_DATABASE:0}
+    # 支持环境变量：REDIS_CONNECT_TIMEOUT（默认 10000 毫秒）
+    connect-timeout: ${REDIS_CONNECT_TIMEOUT:10000}
+
+  # ============================================
+  # 数据库配置
+  # ============================================
+  datasource:
+    # 支持环境变量：DATASOURCE_USERNAME
+    username: ${DATASOURCE_USERNAME:root}
+    # 支持环境变量：DATASOURCE_PASSWORD
+    password: ${DATASOURCE_PASSWORD:root}
+
+  # ============================================
+  # MinIO 分布式文件存储配置
+  # ============================================
+  minio:
+    endpoint: ${MINIO_ENDPOINT:http://localhost:9000}   # MinIO 集群节点地址
+    access-key: ${MINIO_ROOT_USER:minioadmin}   # 默认 minio
+    secret-key: ${MINIO_ROOT_PASSWORD:minioadmin}  # 默认 minio
+    bucket: ${MINIO_BUCKET:gdairport-violation-monitor}
+
+
+  # ============================================
+  # RabbitMQ 配置
+  # ============================================
+  rabbitmq:
+    # 支持环境变量：RABBITMQ_HOST
+    host: ${RABBITMQ_HOST:localhost}
+    # 支持环境变量：RABBITMQ_PORT
+    port: ${RABBITMQ_PORT:5672}
+    # 支持环境变量：RABBITMQ_USERNAME
+    username: ${RABBITMQ_USERNAME:rabbitmq}
+    # 支持环境变量：RABBITMQ_PASSWORD
+    password: ${RABBITMQ_PASSWORD:rabbitmq}
+
+  # ============================================
+  # 文件上传配置
+  # ============================================
+  servlet:
+    multipart:
+      # 支持环境变量：MULTIPART_MAX_FILE_SIZE
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:100MB}
+      # 支持环境变量：MULTIPART_MAX_REQUEST_SIZE
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:200MB}
+
+
+
+

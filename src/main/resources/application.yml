@@ -1,0 +1,52 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+  servlet:
+    multipart:
+      max-file-size: ${gdairport-violation-monitor.servlet.multipart.max-file-size}
+      max-request-size: ${gdairport-violation-monitor.servlet.multipart.max-request-size}
+
+  data:
+    redis:
+      host: ${gdairport-violation-monitor.redis.host}
+      port: ${gdairport-violation-monitor.redis.port}
+      password: ${gdairport-violation-monitor.redis.password}
+      database: ${gdairport-violation-monitor.redis.database}
+      connect-timeout: ${gdairport-violation-monitor.redis.connect-timeout}
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/gdairport-violation-monitor?&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&useSSL=false&characterEncoding=UTF-8
+    username: ${gdairport-violation-monitor.datasource.username}
+    password: ${gdairport-violation-monitor.datasource.password}
+
+  rabbitmq:
+    host: ${gdairport-violation-monitor.rabbitmq.host}
+    port: ${gdairport-violation-monitor.rabbitmq.port}
+    username: ${gdairport-violation-monitor.rabbitmq.username}
+    password: ${gdairport-violation-monitor.rabbitmq.password}
+    virtual-host: /gdairport-violation-monitor
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+minio:
+  endpoint: ${gdairport-violation-monitor.minio.endpoint}
+  access-key: ${gdairport-violation-monitor.minio.access-key}
+  secret-key: ${gdairport-violation-monitor.minio.secret-key}
+  bucket: ${gdairport-violation-monitor.minio.bucket}
+
+user:
+  password-length: ${gdairport-violation-monitor.user.password-length}
+
+jwt:
+  access-expire: ${gdairport-violation-monitor.jwt.access-expire}
+  refresh-expire: ${gdairport-violation-monitor.jwt.refresh-expire}
+  security: ${gdairport-violation-monitor.jwt.security}
+
+

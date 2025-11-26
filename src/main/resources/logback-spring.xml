@@ -50,7 +50,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
         </root>
-        <logger name="com.example" level="DEBUG"/>
+        <logger name="com.gdairport" level="DEBUG"/>
     </springProfile>
 
     <!-- 生产环境配置 -->
@@ -59,7 +59,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="ASYNC_FILE"/>
         </root>
-        <logger name="com.example" level="INFO"/>
+        <logger name="com.gdairport" level="INFO"/>
     </springProfile>
 
     <!-- 默认配置 -->

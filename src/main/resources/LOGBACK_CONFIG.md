@@ -45,7 +45,7 @@
 
 **示例输出**：
 ```
-2024-01-15 14:30:25.123 [http-nio-8080-exec-1] INFO  com.example.controller.UserController - 用户登录成功
+2024-01-15 14:30:25.123 [http-nio-8080-exec-1] INFO  com.gdairport.controller.UserController - 用户登录成功
 ```
 
 ---
@@ -126,36 +126,38 @@ logs/
 #### 开发环境（dev profile）
 
 ```xml
+
 <springProfile name="dev">
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE"/>
     </root>
-    <logger name="com.example" level="DEBUG"/>
+    <logger name="com.gdairport" level="DEBUG"/>
 </springProfile>
 ```
 
 **配置**：
 - 根日志级别：INFO
 - 输出位置：控制台 + 文件
-- `com.example` 包：DEBUG 级别（更详细的日志）
+- `com.gdairport` 包：DEBUG 级别（更详细的日志）
 
 #### 生产环境（prod profile）
 
 ```xml
+
 <springProfile name="prod">
     <root level="WARN">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="ASYNC_FILE"/>
     </root>
-    <logger name="com.example" level="INFO"/>
+    <logger name="com.gdairport" level="INFO"/>
 </springProfile>
 ```
 
 **配置**：
 - 根日志级别：WARN（只记录警告和错误）
 - 输出位置：控制台 + 异步文件
-- `com.example` 包：INFO 级别
+- `com.gdairport` 包：INFO 级别
 
 #### 默认配置（无 profile）
 
@@ -237,9 +239,9 @@ cat logs/gdairport-violation-monitor.2024-01-15.0.log
 **日志级别继承关系**：
 ```
 root (INFO)
-  └── com.example (DEBUG in dev, INFO in prod)
-      └── com.example.controller (继承父级)
-          └── com.example.controller.UserController (继承父级)
+  └── com.gdairport (DEBUG in dev, INFO in prod)
+      └── com.gdairport.controller (继承父级)
+          └── com.gdairport.controller.UserController (继承父级)
 ```
 
 ---
@@ -263,22 +265,24 @@ export LOG_PATH=/custom/path
 ### 修改日志级别
 
 **方式1：修改 logback-spring.xml**
+
 ```xml
-<logger name="com.example.service" level="WARN"/>
+
+<logger name="com.gdairport.service" level="WARN"/>
 ```
 
 **方式2：运行时指定**
 ```bash
-java -jar app.jar --logging.level.com.example=DEBUG
+java -jar app.jar --logging.level.com.gdairport=DEBUG
 ```
 
 ### 添加新的 Logger
 
 ```xml
 <!-- 单独配置某个类的日志级别 -->
-<logger name="com.example.controller.UserController" level="DEBUG"/>
+<logger name="com.gdairport.controller.UserController" level="DEBUG"/>
 
-<!-- 配置第三方库的日志级别 -->
+        <!-- 配置第三方库的日志级别 -->
 <logger name="org.springframework" level="WARN"/>
 <logger name="com.baomidou.mybatisplus" level="DEBUG"/>
 ```

@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.mapper.FileMapper">
 
-    <select id="listAllAncestors" parameterType="long" resultType="com.example.domain.entity.File">
+    <select id="listAllAncestors" parameterType="long" resultType="com.gdairport.domain.entity.File">
         WITH RECURSIVE ancestors AS (
             SELECT id, parent_id FROM files WHERE id = #{id}
             UNION ALL
@@ -15,7 +15,7 @@
         SELECT id, parent_id FROM ancestors;
     </select>
 
-    <select id="listAllDescendants" parameterType="long" resultType="com.example.domain.entity.File">
+    <select id="listAllDescendants" parameterType="long" resultType="com.gdairport.domain.entity.File">
         WITH RECURSIVE descendants AS (
             SELECT id, parent_id FROM files WHERE id = #{id}
             UNION ALL
